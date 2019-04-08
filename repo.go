@@ -1,7 +1,30 @@
 package main
 
 func RepoIndexUser() Users {
-	return Users{}
+	var users Users
+	rows, err := DB.Query("SELECT * FROM users ORDER BY top_score DESC LIMIT 50")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		user := User{}
+		err := rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.CreatedAt,
+			&user.Password,
+			&user.TopScore)
+		if err != nil {
+			panic(err)
+		}
+		users = append(users, user)
+	}
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	return users
 }
 
 func RepoFindUser(id int) User {
