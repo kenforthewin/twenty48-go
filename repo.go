@@ -18,10 +18,10 @@ func RepoFindUser(id int) User {
 	return user
 }
 
-func RepoDestroyUser(id int) {
-	return
-}
-
 func RepoInsertUser(user User) User {
-	return User{}
+	err := DB.QueryRow("INSERT INTO users(name, created_on) VALUES($1, now()) RETURNING id, created_on", user.Name).Scan(&user.ID, &user.CreatedAt)
+	if err != nil {
+		panic(err)
+	}
+	return user
 }
